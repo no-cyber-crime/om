@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blooming Garden with Fireflies</title>
+  <style>
+    body {
+      margin: 0;
+      background: #0b1e0f; /* Darker, night garden green */
+      overflow: hidden;
+      font-family: 'Playfair Display', serif;
+      position: relative;
+      height: 100vh;
+    }
+
+    .flower {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      transform: scale(0);
+      opacity: 0;
+      transition: transform 1.5s ease-out, opacity 1.5s ease-out;
+      will-change: transform, opacity;
+    }
+
+    .bloom {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .message-box {
+      position: absolute;
+      bottom: 8%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid #d3a4b2;
+      border-radius: 14px;
+      padding: 24px;
+      font-size: 1.2em;
+      color: #4d2c38;
+      max-width: 80%;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 2s ease-in-out;
+      z-index: 10;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    .replay-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 10px 16px;
+      background-color: #ff69b4;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 20;
+      box-shadow: 0 0 6px #ff69b4;
+    }
+
+    /* Fireflies */
+    .firefly {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: radial-gradient(circle, #dfff00 0%, #a1c935 60%, transparent 90%);
+      border-radius: 50%;
+      filter: drop-shadow(0 0 6px #dfff00);
+      opacity: 0;
+      animation: flicker 3s infinite ease-in-out alternate,
+                 floatUp linear infinite;
+      will-change: transform, opacity;
+      pointer-events: none;
+      z-index: 15;
+    }
+
+    @keyframes flicker {
+      0%, 100% {opacity: 0.2;}
+      50% {opacity: 1;}
+    }
+
+    @keyframes floatUp {
+      0% {transform: translateY(0);}
+      100% {transform: translateY(-80px);}
+    }
+  </style>
+</head>
+<body>
+  <button class="replay-btn" onclick="replayGarden()">Replay 🌸</button>
+  <div class="message-box" id="message">
+    huee.<br><br>
+    Mi Riddhi sathi website banaun dili hoti, but you deserve it as well. so, here we are...<br><br>
+    Best luck for your exam, that integral stuff is clearly made to feel us like Ishaan.<br><br>
+    You and Riddhi are doing great, I am extremely proud of you guys. I know there are stuffs you avoid telling anyone, but I am here. Have a nice day. BYEEE
+  </div>
+
+  <script>
+    const flowerSVGs = [
+      // Rose
+      `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="12" fill="#ff4d6d" /><path d="M32 20c6 0 10 4 10 10s-4 10-10 10-10-4-10-10 4-10 10-10z" fill="#ff758f" /></svg>`,
+      // Sunflower
+      `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="10" fill="#6b3e26" /><g fill="#ffcc33">${[...Array(12)].map((_, i) => `<ellipse cx="32" cy="20" rx="4" ry="10" transform="rotate(${i * 30}, 32, 32)" />`).join('')}</g></svg>`,
+      // Daisy
+      `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="5" fill="#ffcc00" /><g fill="#fff">${[...Array(12)].map((_, i) => `<ellipse cx="32" cy="16" rx="3" ry="8" transform="rotate(${i * 30}, 32, 32)" />`).join('')}</g></svg>`,
+      // Hibiscus
+      `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="8" fill="#c2185b" /><g fill="#e91e63">${[...Array(5)].map((_, i) => `<path d="M32 32 Q28 16 40 20 Q52 24 32 32" transform="rotate(${i * 72}, 32, 32)" />`).join('')}</g></svg>`,
+      // Lily
+      `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="4" fill="#f8bbd0" /><g fill="#fce4ec">${[...Array(6)].map((_, i) => `<path d="M32 32 Q25 10 32 12 Q39 10 32 32" transform="rotate(${i * 60}, 32, 32)" />`).join('')}</g></svg>`
+    ];
+
+    function generateGarden() {
+      // Remove old flowers & fireflies
+      document.querySelectorAll('.flower').forEach(f => f.remove());
+      document.querySelectorAll('.firefly').forEach(f => f.remove());
+
+      // Create flowers
+      for (let i = 0; i < 160; i++) {
+        const flower = document.createElement('div');
+        flower.classList.add('flower');
+        flower.innerHTML = flowerSVGs[Math.floor(Math.random() * flowerSVGs.length)];
+        flower.style.left = Math.random() * 95 + 'vw';
+        flower.style.top = Math.random() * 85 + 'vh';
+
+        const size = 30 + Math.random() * 30;
+        flower.style.width = size + 'px';
+        flower.style.height = size + 'px';
+
+        document.body.appendChild(flower);
+
+        setTimeout(() => {
+          flower.classList.add('bloom');
+        }, 300 + i * 50 + Math.random() * 200);
+      }
+
+      // Create fireflies
+      for (let i = 0; i < 25; i++) {
+        const firefly = document.createElement('div');
+        firefly.classList.add('firefly');
+
+        // Random position initially
+        firefly.style.left = Math.random() * 98 + 'vw';
+        firefly.style.top = Math.random() * 95 + 'vh';
+
+        // Random flicker animation delay & duration for natural effect
+        firefly.style.animationDelay = (Math.random() * 3) + 's';
+        firefly.style.animationDuration = (2 + Math.random() * 3) + 's';
+
+        // Slower floating speed (duration of floatUp)
+        const floatDuration = 12 + Math.random() * 12; // doubled from before
+        firefly.style.animation += `, floatUp ${floatDuration}s linear infinite`;
+
+        document.body.appendChild(firefly);
+
+        // Animate vertical floating with random horizontal wiggle
+        animateFirefly(firefly, floatDuration);
+      }
+
+      setTimeout(() => {
+        document.getElementById('message').style.opacity = 1;
+      }, 6000);
+    }
+
+    function animateFirefly(firefly, duration) {
+      let startX = parseFloat(firefly.style.left);
+      let startY = parseFloat(firefly.style.top);
+
+      let startTime = null;
+
+      function step(timestamp) {
+        if (!startTime) startTime = timestamp;
+        const elapsed = (timestamp - startTime) / 1000; // seconds
+        const progress = (elapsed % duration) / duration;
+
+        // Float up vertically, wrap around screen bottom when reaches top (simulate loop)
+        let newY = startY - 80 * progress;
+        if (newY < 0) newY += 100;
+
+        // Wiggle horizontally using sine wave
+        let newX = startX + 3 * Math.sin(progress * 2 * Math.PI * 2);
+
+        firefly.style.top = newY + 'vh';
+        firefly.style.left = newX + 'vw';
+
+        requestAnimationFrame(step);
+      }
+
+      requestAnimationFrame(step);
+    }
+
+    function replayGarden() {
+      document.getElementById('message').style.opacity = 0;
+      setTimeout(generateGarden, 300);
+    }
+
+    // Initial garden
+    generateGarden();
+  </script>
+</body>
+</html>
